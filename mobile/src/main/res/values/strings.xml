@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">GmsApi</string>
+    <string name="received_message1">Received message from 1: </string>
+    <string name="received_message2">Received message from 2:</string>
+    <string name="msg_info1">phone 111111111!</string>
+    <string name="msg_info2">phone 222222222!</string>
+    <string name="received_messages">Received message:</string>
+
+    <string name="send_message1">Send msg 1</string>
+    <string name="send_message2">Send msg 2</string>
+    <string name="peer_connected">Peer connected.</string>
+    <string name="peer_disconnected">Peer disconnected.</string>
+    <string name="message_sent">Message sent through: </string>
+    <string name="error_message">Error sending message through: </string>
+    <string name="wearable_api_unavailable">Wearable API is unavailable.</string>
+
+    <string name="sync_button">Sync</string>
+    <string name="select_button">Select</string>
+</resources>

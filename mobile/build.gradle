@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+
+    defaultConfig {
+        applicationId "com.cscao.apps.gmsapi"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    wearApp project(':wear')
+    compile 'com.cscao.libs:mlog:1.6'
+    compile project(':gmsapi')
+}
+
+android.applicationVariants.all { variant ->
+    def appName
+    //Check if an applicationName property is supplied; if not use the name of the parent project.
+    if (project.hasProperty("applicationName")) {
+        appName = applicationName
+    } else {
+        appName = parent.name
+    }
+
+    variant.outputs.each { output ->
+        def newApkName
+        //If there's no ZipAlign task it means that our artifact will be unaligned and we need to mark it as such.
+        if (output.zipAlign) {
+            newApkName = "${appName}"+new Date().format('yyyyMMddHHmm')+".apk"
+        } else {
+            newApkName = "${appName}-unaligned.apk"
+        }
+        output.outputFile = new File(output.outputFile.parent, newApkName)
+    }
+}
