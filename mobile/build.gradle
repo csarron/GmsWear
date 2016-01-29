@@ -39,7 +39,7 @@ android.applicationVariants.all { variant ->
         def newApkName
         //If there's no ZipAlign task it means that our artifact will be unaligned and we need to mark it as such.
         if (output.zipAlign) {
-            newApkName = "${appName}"+new Date().format('yyyyMMddHHmm')+".apk"
+            newApkName = "${appName}.apk"
         } else {
             newApkName = "${appName}-unaligned.apk"
         }

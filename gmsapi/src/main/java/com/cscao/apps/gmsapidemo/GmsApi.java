@@ -35,10 +35,24 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * Created by qqcao on 1/16/16.
+ * <h1>Android Wear Data Syncing and Messaging Library</h1>
+ * This library encapsulates Android Wearable GMS API for messaging and syncing data between mobile and wearable apps.
+ * <p>
+ * <b>Usage:</b>
+ * 1. create an GmsApi object (e.g. gmsApi) in onCreate()
+ * 2. call gmsApi.connect in onResume() (don't forget to call disconnect in onPause())
+ * 3. just use gmsApi.sendMsg() to send the messages you like, besides you can set an onMessageReceivedListener to receive messages
+ * 4. for data syncing, it behaves similarly to messaging procedure, just use relevant sync methods
+ * Please see demo app for detailed usage.
+ * </p>
+ * <b>Note:</b>
+ * For reliability, you'd better send data that is less than 100kb through messaging API. If you need to send larger data blobs, you have to use data API (DataApi and Channel Api).
  *
+ * @author Arron Cao
+ * @version 0.91
+ * @since 2016-1-16
  */
-@SuppressWarnings("unused")
+
 public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener, CapabilityApi.CapabilityListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mApiClient;
@@ -54,6 +68,23 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     private Context mContext;
     private Handler mHandler;
 
+    /**
+     * Construct an GmsApi object
+     *
+     * @param context    the app context
+     * @param capability the capabilities provided by nodes on the Wear network
+     */
+    public GmsApi(Context context, String capability) {
+        this(context, null, capability);
+    }
+
+    /**
+     * Construct an GmsApi object
+     *
+     * @param context    the app context
+     * @param capability the capabilities provided by nodes on the Wear network
+     * @param handler    a handler used for showing Toast of GmsApi status
+     */
     public GmsApi(Context context, Handler handler, String capability) {
 
         if (context == null) {
@@ -75,6 +106,11 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
                 .build();
     }
 
+    /**
+     * Connects the client to Google Play services. This method returns immediately, and connects to the service in the background.
+     *
+     * Please refer to GoogleApiClient doc
+     */
     public void connect() {
         MLog.d("connect");
         int connectionResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext);
@@ -108,6 +144,11 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         }
     }
 
+    /**
+     * Closes the connection to Google Play services. No calls can be made using this client after calling this method. Any method calls that haven't executed yet will be canceled.
+     *
+     * Please refer to GoogleApiClient doc
+     */
     public void disconnect() {
         MLog.d("disconnect");
 
@@ -163,6 +204,11 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         mNodes = capabilityInfo.getNodes();
     }
 
+    /**
+     * show toast for GmsApi related info
+     * @param notifyText toast text string
+     * @param length toast lasting time, usually Toast.LENGTH_SHORT or Toast.LENGTH_LONG
+     */
     public void showToast(final String notifyText, final int length) {
         if (mHandler == null) {
             MLog.w("mHandler null!");
@@ -204,10 +250,21 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         return bestNodeId;
     }
 
+    /**
+     * send message to a nearby node
+     * @param path the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg small array of information to pass to the target node. Generally not larger than 100k
+     */
     public void sendMsg(String path, byte[] msg) {
         sendMsg(path, msg, false);
     }
 
+    /**
+     * send message to node(s)
+     * @param path the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg small array of information to pass to the target node. Generally not larger than 100k
+     * @param isSentToAllNodes whether or not to send the message to all nodes
+     */
     public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes) {
         if (isSentToAllNodes) {
             for (Node node : mNodes) {
@@ -218,6 +275,10 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         }
     }
 
+    /**
+     * the same interface to the method onMessageReceived in MessageApi
+     * @param messageEvent information about a message received by a listener
+     */
     @Override
     public void onMessageReceived(final MessageEvent messageEvent) {
         onMessageReceivedListener.onMessageReceived(new MessageData() {
@@ -306,13 +367,13 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         void onAssetReceived(byte[] bytes);
     }
 
-    public  void setOnAssetReceivedListener(final OnAssetReceivedListener listener, Asset asset) {
+    public void setOnAssetReceivedListener(final OnAssetReceivedListener listener, Asset asset) {
         Wearable.DataApi.getFdForAsset(
                 mApiClient, asset).setResultCallback(new ResultCallback<DataApi.GetFdForAssetResult>() {
             @Override
             public void onResult(@NonNull DataApi.GetFdForAssetResult getFdForAssetResult) {
                 try {
-                    final byte[] bytes= IOUtils.toByteArray(getFdForAssetResult.getInputStream()) ;
+                    final byte[] bytes = IOUtils.toByteArray(getFdForAssetResult.getInputStream());
                     listener.onAssetReceived(bytes);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -409,7 +470,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     //General method to sync data in the Data Layer
     private void syncData(PutDataMapRequest putDataMapRequest) {
         if (MLog.isDebuggable()) {
-            DataMap dataMap=putDataMapRequest.getDataMap();
+            DataMap dataMap = putDataMapRequest.getDataMap();
             dataMap.putLong("timestamp", System.currentTimeMillis());
             MLog.d("timestamp");
         }
