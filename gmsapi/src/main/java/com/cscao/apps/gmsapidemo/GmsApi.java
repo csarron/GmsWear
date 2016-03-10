@@ -49,7 +49,7 @@ import java.util.Set;
  * For reliability, you'd better send data that is less than 100kb through messaging API. If you need to send larger data blobs, you have to use data API (DataApi and Channel Api).
  *
  * @author Arron Cao
- * @version 0.91
+ * @version 0.92
  * @since 2016-1-16
  */
 
@@ -382,100 +382,103 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         });
     }
 
-    public void syncAsset(String key, byte[] bytes) {
+    public void syncAsset(String key, byte[] bytes,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(ASSET_PATH_PREFIX + key);
         Asset asset = Asset.createFromBytes(bytes);
         putDataMapRequest.getDataMap().putAsset(key, asset);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncBoolean(String key, boolean item) {
+    public void syncBoolean(String key, boolean item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putBoolean(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncByte(String key, byte item) {
+    public void syncByte(String key, byte item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putByte(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncInt(String key, int item) {
+    public void syncInt(String key, int item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putInt(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncLong(String key, long item) {
+    public void syncLong(String key, long item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putLong(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncFloat(String key, float item) {
+    public void syncFloat(String key, float item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putFloat(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncDouble(String key, long item) {
+    public void syncDouble(String key, long item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putDouble(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncByteArray(String key, byte[] item) {
+    public void syncByteArray(String key, byte[] item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putByteArray(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncString(String key, String item) {
+    public void syncString(String key, String item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putString(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncLongArray(String key, long[] item) {
+    public void syncLongArray(String key, long[] item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putLongArray(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncFloatArray(String key, float[] item) {
+    public void syncFloatArray(String key, float[] item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putFloatArray(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncStringArray(String key, String[] item) {
+    public void syncStringArray(String key, String[] item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putStringArray(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncIntegerArrayList(String key, ArrayList<Integer> item) {
+    public void syncIntegerArrayList(String key, ArrayList<Integer> item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putIntegerArrayList(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
-    public void syncStringArrayList(String key, ArrayList<String> item) {
+    public void syncStringArrayList(String key, ArrayList<String> item,boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putStringArrayList(key, item);
-        syncData(putDataMapRequest);
+        syncData(putDataMapRequest,isUrgent);
     }
 
     //General method to sync data in the Data Layer
-    private void syncData(PutDataMapRequest putDataMapRequest) {
+    private void syncData(PutDataMapRequest putDataMapRequest,boolean isUrgent) {
         if (MLog.isDebuggable()) {
             DataMap dataMap = putDataMapRequest.getDataMap();
             dataMap.putLong("timestamp", System.currentTimeMillis());
             MLog.d("timestamp");
         }
 
-        PutDataRequest request = putDataMapRequest.asPutDataRequest();
+        if (isUrgent) {
+            putDataMapRequest=putDataMapRequest.setUrgent();
+        }
+        PutDataRequest request = putDataMapRequest.setUrgent().asPutDataRequest();
 
         MLog.d("Generating DataItem: " + request);
         if (!mApiClient.isConnected()) {
