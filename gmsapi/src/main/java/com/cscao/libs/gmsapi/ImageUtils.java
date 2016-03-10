@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapi;
+package com.cscao.libs.gmsapi;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;

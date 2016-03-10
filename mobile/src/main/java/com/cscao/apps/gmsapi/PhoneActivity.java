@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapidemo;
+package com.cscao.apps.gmsapi;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,9 +15,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.cscao.apps.gmsapi.GmsApi;
-import com.cscao.apps.gmsapi.ImageUtils;
 import com.cscao.apps.mlog.MLog;
+import com.cscao.libs.gmsapi.GmsApi;
+import com.cscao.libs.gmsapi.ImageUtils;
 import com.google.android.gms.wearable.DataMap;
 
 public class PhoneActivity extends Activity {
@@ -194,7 +194,7 @@ public class PhoneActivity extends Activity {
                         mImageView.setImageBitmap(resource);
                         byte[] b = ImageUtils.getBytesFromBitmap(resource);
                         MLog.d("bytes: " + b.length);
-                        gmsApi.syncAsset("img", b,false);
+                        gmsApi.syncAsset("img", b,true);
                         gmsApi.showToast("send img", Toast.LENGTH_SHORT);
                     }
                 });

@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapi;
+package com.cscao.libs.gmsapi;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -477,7 +477,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         if (isUrgent) {
             putDataMapRequest=putDataMapRequest.setUrgent();
         }
-        PutDataRequest request = putDataMapRequest.setUrgent().asPutDataRequest();
+        PutDataRequest request = putDataMapRequest.asPutDataRequest();
 
         MLog.d("Generating DataItem: " + request);
         if (!mApiClient.isConnected()) {

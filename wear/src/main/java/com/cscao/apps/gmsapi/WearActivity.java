@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapidemo;
+package com.cscao.apps.gmsapi;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cscao.apps.gmsapi.GmsApi;
-import com.cscao.apps.gmsapi.ImageUtils;
 import com.cscao.apps.mlog.MLog;
+import com.cscao.libs.gmsapi.GmsApi;
+import com.cscao.libs.gmsapi.ImageUtils;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataMap;
 

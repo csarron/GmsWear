@@ -22,7 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
-    compile 'com.cscao.libs:mlog:1.6'
     compile project(':gmsapi')
 }
 

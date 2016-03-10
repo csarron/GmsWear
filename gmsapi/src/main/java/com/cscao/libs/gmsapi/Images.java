@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapi;
+package com.cscao.libs.gmsapi;
 
 public class Images {
 
