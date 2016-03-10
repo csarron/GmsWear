@@ -1,4 +1,4 @@
-package com.cscao.apps.gmsapidemo;
+package com.cscao.apps.gmsapi;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.cscao.apps.gmsapi.R;
 import com.cscao.apps.mlog.MLog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -49,7 +48,7 @@ import java.util.Set;
  * For reliability, you'd better send data that is less than 100kb through messaging API. If you need to send larger data blobs, you have to use data API (DataApi and Channel Api).
  *
  * @author Arron Cao
- * @version 0.92
+ * @version 0.93
  * @since 2016-1-16
  */
 

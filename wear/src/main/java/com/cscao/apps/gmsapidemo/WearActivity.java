@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cscao.apps.gmsapi.GmsApi;
+import com.cscao.apps.gmsapi.ImageUtils;
 import com.cscao.apps.mlog.MLog;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataMap;
@@ -87,7 +89,7 @@ public class WearActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                gmsApi.syncString("key", getString(R.string.sync_button) + count++);
+                gmsApi.syncString("key", getString(R.string.sync_button) + count++,false);
 
 //                gmsApi.showToast("sent sync button", Toast.LENGTH_SHORT);
             }

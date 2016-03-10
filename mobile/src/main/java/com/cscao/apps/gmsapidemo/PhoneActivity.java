@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.cscao.apps.gmsapi.GmsApi;
+import com.cscao.apps.gmsapi.ImageUtils;
 import com.cscao.apps.mlog.MLog;
 import com.google.android.gms.wearable.DataMap;
 
@@ -86,7 +88,7 @@ public class PhoneActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                gmsApi.syncString("key", getString(R.string.sync_button) + count++);
+                gmsApi.syncString("key", getString(R.string.sync_button) + count++,false);
                 syncImage(images[count % images.length]);
 //                new SendImageTask().execute(Images.urls[count % Images.urls.length]);
 //                gmsApi.showToast("sent sync button",Toast.LENGTH_SHORT);
@@ -192,7 +194,7 @@ public class PhoneActivity extends Activity {
                         mImageView.setImageBitmap(resource);
                         byte[] b = ImageUtils.getBytesFromBitmap(resource);
                         MLog.d("bytes: " + b.length);
-                        gmsApi.syncAsset("img", b);
+                        gmsApi.syncAsset("img", b,false);
                         gmsApi.showToast("send img", Toast.LENGTH_SHORT);
                     }
                 });
@@ -218,7 +220,7 @@ public class PhoneActivity extends Activity {
                         mImageView.setImageBitmap(resource);
                         byte[] b = ImageUtils.getBytesFromBitmap(resource);
                         MLog.d("bytes: " + b.length);
-                        gmsApi.syncAsset("img", b);
+                        gmsApi.syncAsset("img", b,false);
                         gmsApi.showToast("send img", Toast.LENGTH_SHORT);
                     }
                 });
