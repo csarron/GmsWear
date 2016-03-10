@@ -2,6 +2,8 @@
 
 Android Wear Data Syncing and Messaging Library
 
+[ ![Download](https://api.bintray.com/packages/csarron/libs/gmsapi/images/download.svg) ](https://bintray.com/csarron/libs/gmsapi/_latestVersion)
+
 ##Introduction
 
 This library  demonstrates how to use Android Wearable GMS API for messaging and syncing data between mobile and wearable apps.
