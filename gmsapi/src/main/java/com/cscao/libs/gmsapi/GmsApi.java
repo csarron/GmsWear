@@ -11,6 +11,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
@@ -107,7 +108,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
 
     /**
      * Connects the client to Google Play services. This method returns immediately, and connects to the service in the background.
-     *
+     * <p/>
      * Please refer to GoogleApiClient doc
      */
     public void connect() {
@@ -145,7 +146,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
 
     /**
      * Closes the connection to Google Play services. No calls can be made using this client after calling this method. Any method calls that haven't executed yet will be canceled.
-     *
+     * <p/>
      * Please refer to GoogleApiClient doc
      */
     public void disconnect() {
@@ -205,8 +206,9 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
 
     /**
      * show toast for GmsApi related info
+     *
      * @param notifyText toast text string
-     * @param length toast lasting time, usually Toast.LENGTH_SHORT or Toast.LENGTH_LONG
+     * @param length     toast lasting time, usually Toast.LENGTH_SHORT or Toast.LENGTH_LONG
      */
     public void showToast(final String notifyText, final int length) {
         if (mHandler == null) {
@@ -223,19 +225,19 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
 
     }
 
-    private void sendMsgToNode(String node, final String path, byte[] msg) {
-        Wearable.MessageApi.sendMessage(mApiClient, node, path, msg).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
-            @Override
-            public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-                if (sendMessageResult.getStatus().isSuccess()) {
-                    MLog.d("Message sent through:" + path);
-                } else {
-                    showToast(sendMessageResult.getStatus().getStatusMessage(), Toast.LENGTH_SHORT);
-                    MLog.d("Message sent error from:" + path);
-                }
-            }
-        });
-    }
+//    private void sendMsgToNode(String node, final String path, byte[] msg) {
+//        Wearable.MessageApi.sendMessage(mApiClient, node, path, msg).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+//            @Override
+//            public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+//                if (sendMessageResult.getStatus().isSuccess()) {
+//                    MLog.d("Message sent through:" + path);
+//                } else {
+//                    showToast(sendMessageResult.getStatus().getStatusMessage(), Toast.LENGTH_SHORT);
+//                    MLog.d("Message sent error from:" + path);
+//                }
+//            }
+//        });
+//    }
 
     private String pickBestNodeId(Set<Node> nodes) {
         String bestNodeId = null;
@@ -251,31 +253,66 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
 
     /**
      * send message to a nearby node
+     *
      * @param path the identifier uniquely specify a particular endpoint at the receiving node
-     * @param msg small array of information to pass to the target node. Generally not larger than 100k
+     * @param msg  small array of information to pass to the target node. Generally not larger than 100k
+     * @param onMessageResultListener the result listener for the sent message
      */
-    public void sendMsg(String path, byte[] msg) {
-        sendMsg(path, msg, false);
+    public void sendMsg(String path, byte[] msg,OnMessageResultListener onMessageResultListener) {
+        sendMsg(path, msg, false,onMessageResultListener);
     }
 
     /**
      * send message to node(s)
-     * @param path the identifier uniquely specify a particular endpoint at the receiving node
-     * @param msg small array of information to pass to the target node. Generally not larger than 100k
+     *
+     * @param path             the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg              small array of information to pass to the target node. Generally not larger than 100k
      * @param isSentToAllNodes whether or not to send the message to all nodes
+     * @param onMessageResultListener the result listener for the sent message
      */
-    public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes) {
+    public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes,OnMessageResultListener onMessageResultListener) {
         if (isSentToAllNodes) {
             for (Node node : mNodes) {
-                sendMsgToNode(node.getId(), path, msg);
+                sendMsgToNode(node.getId(), path, msg,onMessageResultListener);
             }
         } else {
-            sendMsgToNode(pickBestNodeId(mNodes), path, msg);
+            sendMsgToNode(pickBestNodeId(mNodes), path, msg,onMessageResultListener);
         }
+    }
+
+
+    private void sendMsgToNode(String node, final String path, byte[] msg,final OnMessageResultListener onMessageResultListener) {
+
+        Wearable.MessageApi.sendMessage(mApiClient, node, path, msg).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+            @Override
+            public void onResult(@NonNull final MessageApi.SendMessageResult sendMessageResult) {
+                if (onMessageResultListener!=null)
+                onMessageResultListener.onMessageResult(new MessageResult() {
+                    @Override
+                    public int getRequestId() {
+                        return sendMessageResult.getRequestId();
+                    }
+
+                    @Override
+                    public Status getStatus() {
+                        return sendMessageResult.getStatus();
+                    }
+                });
+            }
+        });
+    }
+
+    public interface OnMessageResultListener {
+        void onMessageResult(MessageResult messageResult);
+    }
+
+    public interface MessageResult extends MessageApi.SendMessageResult {
+
     }
 
     /**
      * the same interface to the method onMessageReceived in MessageApi
+     *
      * @param messageEvent information about a message received by a listener
      */
     @Override
@@ -345,22 +382,6 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         onDataChangedListener = listener;
     }
 
-//    public byte[] getAsset(Asset asset) {
-//        final byte[][] bytes = new byte[1][1];
-//        Wearable.DataApi.getFdForAsset(
-//                mApiClient, asset).setResultCallback(new ResultCallback<DataApi.GetFdForAssetResult>() {
-//            @Override
-//            public void onResult(@NonNull DataApi.GetFdForAssetResult getFdForAssetResult) {
-//                try {
-//                  bytes[0] =  IOUtils.toByteArray(getFdForAssetResult.getInputStream()) ;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        return bytes[0];
-//    }
 
     public interface OnAssetReceivedListener {
         void onAssetReceived(byte[] bytes);
@@ -381,93 +402,93 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         });
     }
 
-    public void syncAsset(String key, byte[] bytes,boolean isUrgent) {
+    public void syncAsset(String key, byte[] bytes, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(ASSET_PATH_PREFIX + key);
         Asset asset = Asset.createFromBytes(bytes);
         putDataMapRequest.getDataMap().putAsset(key, asset);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncBoolean(String key, boolean item,boolean isUrgent) {
+    public void syncBoolean(String key, boolean item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putBoolean(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncByte(String key, byte item,boolean isUrgent) {
+    public void syncByte(String key, byte item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putByte(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncInt(String key, int item,boolean isUrgent) {
+    public void syncInt(String key, int item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putInt(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncLong(String key, long item,boolean isUrgent) {
+    public void syncLong(String key, long item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putLong(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncFloat(String key, float item,boolean isUrgent) {
+    public void syncFloat(String key, float item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putFloat(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncDouble(String key, long item,boolean isUrgent) {
+    public void syncDouble(String key, long item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putDouble(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncByteArray(String key, byte[] item,boolean isUrgent) {
+    public void syncByteArray(String key, byte[] item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putByteArray(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncString(String key, String item,boolean isUrgent) {
+    public void syncString(String key, String item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putString(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncLongArray(String key, long[] item,boolean isUrgent) {
+    public void syncLongArray(String key, long[] item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putLongArray(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncFloatArray(String key, float[] item,boolean isUrgent) {
+    public void syncFloatArray(String key, float[] item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putFloatArray(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncStringArray(String key, String[] item,boolean isUrgent) {
+    public void syncStringArray(String key, String[] item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putStringArray(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncIntegerArrayList(String key, ArrayList<Integer> item,boolean isUrgent) {
+    public void syncIntegerArrayList(String key, ArrayList<Integer> item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putIntegerArrayList(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncStringArrayList(String key, ArrayList<String> item,boolean isUrgent) {
+    public void syncStringArrayList(String key, ArrayList<String> item, boolean isUrgent) {
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
         putDataMapRequest.getDataMap().putStringArrayList(key, item);
-        syncData(putDataMapRequest,isUrgent);
+        syncData(putDataMapRequest, isUrgent);
     }
 
     //General method to sync data in the Data Layer
-    private void syncData(PutDataMapRequest putDataMapRequest,boolean isUrgent) {
+    private void syncData(PutDataMapRequest putDataMapRequest, boolean isUrgent) {
         if (MLog.isDebuggable()) {
             DataMap dataMap = putDataMapRequest.getDataMap();
             dataMap.putLong("timestamp", System.currentTimeMillis());
@@ -475,7 +496,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         }
 
         if (isUrgent) {
-            putDataMapRequest=putDataMapRequest.setUrgent();
+            putDataMapRequest = putDataMapRequest.setUrgent();
         }
         PutDataRequest request = putDataMapRequest.asPutDataRequest();
 

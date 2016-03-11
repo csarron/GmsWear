@@ -55,7 +55,12 @@ public class WearActivity extends Activity {
             @Override
             public void onClick(View v) {
                 MLog.d("send m1", null);
-                gmsApi.sendMsg(MESSAGE1_PATH, getString(R.string.msg_info1).getBytes());
+                gmsApi.sendMsg(MESSAGE1_PATH, getString(R.string.msg_info1).getBytes(), new GmsApi.OnMessageResultListener() {
+                    @Override
+                    public void onMessageResult(GmsApi.MessageResult messageResult) {
+
+                    }
+                });
 //                gmsApi.showToast(getString(R.string.message_sent) + MESSAGE1_PATH, Toast.LENGTH_SHORT);
             }
         });
@@ -64,7 +69,12 @@ public class WearActivity extends Activity {
         message2Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gmsApi.sendMsg(MESSAGE2_PATH, getString(R.string.msg_info2).getBytes());
+                gmsApi.sendMsg(MESSAGE2_PATH, getString(R.string.msg_info2).getBytes(), new GmsApi.OnMessageResultListener() {
+                    @Override
+                    public void onMessageResult(GmsApi.MessageResult messageResult) {
+
+                    }
+                });
 //                gmsApi.showToast(getString(R.string.message_sent) + MESSAGE2_PATH, Toast.LENGTH_SHORT);
             }
         });
