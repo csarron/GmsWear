@@ -55,7 +55,7 @@ import java.util.Set;
 
 public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener, CapabilityApi.CapabilityListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private GoogleApiClient mApiClient;
+    public final GoogleApiClient mApiClient;
     private Set<Node> mNodes;
     private String mCapability;
 
@@ -254,7 +254,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     }
 
     /**
-     * send message to a nearby node
+     * send message to a nearby node asynchronously
      *
      * @param path                    the identifier uniquely specify a particular endpoint at the receiving node
      * @param msg                     small array of information to pass to the target node. Generally not larger than 100k
@@ -265,7 +265,7 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     }
 
     /**
-     * send message to node(s)
+     * send message to all nodes asynchronously
      *
      * @param path                    the identifier uniquely specify a particular endpoint at the receiving node
      * @param msg                     small array of information to pass to the target node. Generally not larger than 100k
@@ -282,6 +282,36 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         }
     }
 
+    /**
+     * send message to a nearby node synchronously
+     *
+     * @param path the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg small array of information to pass to the target node. Generally not larger than 100k
+     */
+    public void sendMsgSync(String path, byte[] msg){
+        sendMsgSync(path,msg,false);
+    }
+
+    /**
+     * send message to all nodes synchronously
+     *
+     * @param path                    the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg                     small array of information to pass to the target node. Generally not larger than 100k
+     * @param isSentToAllNodes        whether or not to send the message to all nodes
+     */
+    public void sendMsgSync(String path, byte[] msg, boolean isSentToAllNodes){
+        if (isSentToAllNodes) {
+            for (Node node : mNodes) {
+                sendMsgToNodeSync(node.getId(), path, msg);
+            }
+        } else {
+            sendMsgToNodeSync(pickBestNodeId(mNodes), path, msg);
+        }
+    }
+
+    private void sendMsgToNodeSync(String node, String path, byte[] msg) {
+        Wearable.MessageApi.sendMessage(mApiClient,node,path,msg).await();
+    }
 
     private void sendMsgToNode(String node, final String path, byte[] msg, final OnMessageResultListener onMessageResultListener) {
 

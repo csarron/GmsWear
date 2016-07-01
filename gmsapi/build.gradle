@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/csarron/GmsApi'
     gitUrl = 'https://github.com/csarron/GmsApi.git'
     issueUrl = 'https://github.com/csarron/GmsApi/issues'
-    libraryVersion = '0.94'
+    libraryVersion = '0.95'
 
     developerId = 'csarron'
     developerName = 'Arron Cao'
