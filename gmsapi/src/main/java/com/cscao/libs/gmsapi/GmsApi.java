@@ -49,7 +49,7 @@ import java.util.Set;
  * For reliability, you'd better send data that is less than 100kb through messaging API. If you need to send larger data blobs, you have to use data API (DataApi and Channel Api).
  *
  * @author Arron Cao
- * @version 0.93
+ * @version 0.95
  * @since 2016-1-16
  */
 
@@ -107,8 +107,9 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     }
 
     /**
+     * <p>
      * Connects the client to Google Play services. This method returns immediately, and connects to the service in the background.
-     * <p/>
+     * </p>
      * Please refer to GoogleApiClient doc
      */
     public void connect() {
@@ -145,8 +146,9 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     }
 
     /**
+     * <p>
      * Closes the connection to Google Play services. No calls can be made using this client after calling this method. Any method calls that haven't executed yet will be canceled.
-     * <p/>
+     * </p>
      * Please refer to GoogleApiClient doc
      */
     public void disconnect() {
@@ -254,50 +256,50 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
     /**
      * send message to a nearby node
      *
-     * @param path the identifier uniquely specify a particular endpoint at the receiving node
-     * @param msg  small array of information to pass to the target node. Generally not larger than 100k
+     * @param path                    the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg                     small array of information to pass to the target node. Generally not larger than 100k
      * @param onMessageResultListener the result listener for the sent message
      */
-    public void sendMsg(String path, byte[] msg,OnMessageResultListener onMessageResultListener) {
-        sendMsg(path, msg, false,onMessageResultListener);
+    public void sendMsg(String path, byte[] msg, OnMessageResultListener onMessageResultListener) {
+        sendMsg(path, msg, false, onMessageResultListener);
     }
 
     /**
      * send message to node(s)
      *
-     * @param path             the identifier uniquely specify a particular endpoint at the receiving node
-     * @param msg              small array of information to pass to the target node. Generally not larger than 100k
-     * @param isSentToAllNodes whether or not to send the message to all nodes
+     * @param path                    the identifier uniquely specify a particular endpoint at the receiving node
+     * @param msg                     small array of information to pass to the target node. Generally not larger than 100k
+     * @param isSentToAllNodes        whether or not to send the message to all nodes
      * @param onMessageResultListener the result listener for the sent message
      */
-    public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes,OnMessageResultListener onMessageResultListener) {
+    public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes, OnMessageResultListener onMessageResultListener) {
         if (isSentToAllNodes) {
             for (Node node : mNodes) {
-                sendMsgToNode(node.getId(), path, msg,onMessageResultListener);
+                sendMsgToNode(node.getId(), path, msg, onMessageResultListener);
             }
         } else {
-            sendMsgToNode(pickBestNodeId(mNodes), path, msg,onMessageResultListener);
+            sendMsgToNode(pickBestNodeId(mNodes), path, msg, onMessageResultListener);
         }
     }
 
 
-    private void sendMsgToNode(String node, final String path, byte[] msg,final OnMessageResultListener onMessageResultListener) {
+    private void sendMsgToNode(String node, final String path, byte[] msg, final OnMessageResultListener onMessageResultListener) {
 
         Wearable.MessageApi.sendMessage(mApiClient, node, path, msg).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
             @Override
             public void onResult(@NonNull final MessageApi.SendMessageResult sendMessageResult) {
-                if (onMessageResultListener!=null)
-                onMessageResultListener.onMessageResult(new MessageResult() {
-                    @Override
-                    public int getRequestId() {
-                        return sendMessageResult.getRequestId();
-                    }
+                if (onMessageResultListener != null)
+                    onMessageResultListener.onMessageResult(new MessageResult() {
+                        @Override
+                        public int getRequestId() {
+                            return sendMessageResult.getRequestId();
+                        }
 
-                    @Override
-                    public Status getStatus() {
-                        return sendMessageResult.getStatus();
-                    }
-                });
+                        @Override
+                        public Status getStatus() {
+                            return sendMessageResult.getStatus();
+                        }
+                    });
             }
         });
     }

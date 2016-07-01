@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/csarron/GmsApi'
     gitUrl = 'https://github.com/csarron/GmsApi.git'
     issueUrl = 'https://github.com/csarron/GmsApi/issues'
-    libraryVersion = '0.93'
+    libraryVersion = '0.94'
 
     developerId = 'csarron'
     developerName = 'Arron Cao'
@@ -25,7 +25,7 @@ ext {
 }
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 15
