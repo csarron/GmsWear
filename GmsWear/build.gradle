@@ -6,7 +6,7 @@ ext {
 
     publishedGroupId = 'com.cscao.libs'
     libraryName = 'GmsWear'
-    artifact = 'gmswear'
+    artifact = 'GmsWear'
 
     libraryDescription = 'GMS Library for Android Wear'
 
