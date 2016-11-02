@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GmsApi</string>
+    <string name="app_name">GmsWear</string>
     <string name="received_message1">Received message from 1: </string>
     <string name="received_message2">Received message from 2:</string>
     <string name="msg_info1">phone 111111111!</string>
@@ -16,4 +16,5 @@
 
     <string name="sync_button">Sync</string>
     <string name="select_button">Select</string>
+    <string name="exiting_for_permission">Write to external storage permission is required, existing now!</string>
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GmsApi</string>
+    <string name="app_name">GmsWear</string>
     <string name="received_message1">Received message 1:</string>
     <string name="received_message2">Received message 2:</string>
     <string name="received_messages">Received messages:</string>
@@ -13,4 +13,5 @@
     <string name="error_message">Error sending message through: </string>
     <string name="wearable_api_unavailable">Wearable API is unavailable.</string>
     <string name="sync_button">Wear</string>
+    <string name="exiting_for_permission">Write to external storage permission is required, existing now!</string>
 </resources>

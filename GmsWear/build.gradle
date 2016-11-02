@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayRepo = 'libs'
+    bintrayName = 'gmswear'
+
+    publishedGroupId = 'com.cscao.libs'
+    libraryName = 'GmsWear'
+    artifact = 'gmswear'
+
+    libraryDescription = 'GMS Library for Android Wear'
+
+    siteUrl = 'https://github.com/csarron/GmsWear'
+    gitUrl = 'https://github.com/csarron/GmsWear.git'
+    issueUrl = 'https://github.com/csarron/GmsWear/issues'
+    libraryVersion = '0.96'
+
+    developerId = 'csarron'
+    developerName = 'Arron Cao'
+    developerEmail = 'qqcao.cs@gmail.com'
+
+    licenseName = 'The MIT License (MIT)'
+    licenseUrl = 'https://raw.githubusercontent.com/csarron/GmsWear/master/LICENSE'
+    allLicenses = ["MIT"]
+}
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+configurations {
+    javadocDeps
+}
+
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.orhanobut:logger:1.15'
+    compile 'com.google.android.gms:play-services-wearable:9.8.0'
+    compile 'com.google.android.support:wearable:1.4.0'
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:support-v4:23.0.0'
+    javadocDeps 'com.android.support:support-v4:23.0.0'
+
+}
+
+preBuild.dependsOn 'checkstyle'
