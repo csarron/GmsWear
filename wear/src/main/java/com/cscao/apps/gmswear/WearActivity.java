@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -170,7 +171,7 @@ public class WearActivity extends Activity {
 
             @Override
             public void onInputStreamForChannelOpened(int statusCode, String requestId,
-                    Channel channel, final InputStream inputStream) {
+                    final Channel channel, final InputStream inputStream) {
                 if (statusCode != WearableStatusCodes.SUCCESS) {
                     Logger.e("onInputStreamForChannelOpened(): " + "Failed to get input stream");
                     return;
@@ -180,7 +181,8 @@ public class WearActivity extends Activity {
                     @Override
                     protected File doInBackground(Void... params) {
                         try {
-                            File imageFile = new File(getCacheDir(), "temp");
+                            File imageFile = new File(getCacheDir(),
+                                    "temp" + SystemClock.elapsedRealtime());
                             FileOutputStream outputStream = new FileOutputStream(imageFile);
                             IOUtils.copy(inputStream, outputStream);
                             return imageFile;
