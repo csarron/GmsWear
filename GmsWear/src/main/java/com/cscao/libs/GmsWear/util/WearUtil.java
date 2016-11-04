@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.util;
+package com.cscao.libs.gmswear.util;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -30,7 +30,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.cscao.libs.GmsWear.GmsWear;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.Node;
 
@@ -204,7 +203,7 @@ public class WearUtil {
      */
     public static void logD(String tag, String message) {
         if (DEBUG || Log.isLoggable(tag, Log.DEBUG)) {
-            Log.d(tag, "[v" + GmsWear.getInstance().getVersion() + "] " + message);
+            Log.d(tag, message);
         }
     }
 }

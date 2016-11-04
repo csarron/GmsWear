@@ -14,10 +14,7 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear;
-
-import static com.cscao.libs.GmsWear.util.Constants.ASSET_PATH_PREFIX;
-import static com.cscao.libs.GmsWear.util.Constants.DATA_PATH_PREFIX;
+package com.cscao.libs.gmswear;
 
 import android.app.Application;
 import android.content.Context;
@@ -31,14 +28,14 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.cscao.libs.GmsWear.connectivity.FileTransfer;
-import com.cscao.libs.GmsWear.consumer.AbstractDataConsumer;
-import com.cscao.libs.GmsWear.consumer.DataConsumer;
-import com.cscao.libs.GmsWear.filter.NearbyFilter;
-import com.cscao.libs.GmsWear.filter.NodeSelectionFilter;
-import com.cscao.libs.GmsWear.util.AppVisibilityDetector;
-import com.cscao.libs.GmsWear.util.Constants;
-import com.cscao.libs.GmsWear.util.WearUtil;
+import com.cscao.libs.gmswear.connectivity.FileTransfer;
+import com.cscao.libs.gmswear.consumer.AbstractDataConsumer;
+import com.cscao.libs.gmswear.consumer.DataConsumer;
+import com.cscao.libs.gmswear.filter.NearbyFilter;
+import com.cscao.libs.gmswear.filter.NodeSelectionFilter;
+import com.cscao.libs.gmswear.util.AppVisibilityDetector;
+import com.cscao.libs.gmswear.util.Constants;
+import com.cscao.libs.gmswear.util.WearUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -256,25 +253,7 @@ public class GmsWear {
         assertApiConnectivity();
         Set<Node> nearbyNodes = new NearbyFilter().filterNodes(getConnectedNodes());
         Node node = nearbyNodes.iterator().next();
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, node.getId(), path,
-                bytes).setResultCallback(
-                new ResultCallback<MessageApi.SendMessageResult>() {
-                    @Override
-                    public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                        if (!sendMessageResult.getStatus().isSuccess()) {
-                            Log.e(TAG, "Failed to send message, statusCode: " + sendMessageResult
-                                    .getStatus().getStatusCode());
-                        }
-                        if (callback == null) {
-                            for (DataConsumer consumer : mDataConsumers) {
-                                consumer.onSendMessageResult(sendMessageResult.getStatus()
-                                        .getStatusCode());
-                            }
-                        } else {
-                            callback.onResult(sendMessageResult);
-                        }
-                    }
-                });
+        sendMessage(node.getId(), path, bytes, callback);
     }
 
     /**
@@ -563,87 +542,117 @@ public class GmsWear {
                 .await(timeoutInMillis, TimeUnit.MILLISECONDS);
     }
 
-    public void syncAsset(String key, byte[] bytes, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(ASSET_PATH_PREFIX + key);
+    public void syncAsset(String path, String key, byte[] bytes, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         Asset asset = Asset.createFromBytes(bytes);
         putDataMapRequest.getDataMap().putAsset(key, asset);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncBoolean(String key, boolean item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncBoolean(String path, String key, boolean item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putBoolean(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncByte(String key, byte item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncByte(String path, String key, byte item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putByte(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncInt(String key, int item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncInt(String path, String key, int item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putInt(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncLong(String key, long item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncLong(String path, String key, long item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putLong(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncFloat(String key, float item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncFloat(String path, String key, float item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putFloat(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncDouble(String key, long item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncDouble(String path, String key, long item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putDouble(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncByteArray(String key, byte[] item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncByteArray(String path, String key, byte[] item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putByteArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncString(String key, String item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncString(String path, String key, String item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putString(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncLongArray(String key, long[] item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncLongArray(String path, String key, long[] item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putLongArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncFloatArray(String key, float[] item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncFloatArray(String path, String key, float[] item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putFloatArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncStringArray(String key, String[] item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncStringArray(String path, String key, String[] item, boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putStringArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncIntegerArrayList(String key, ArrayList<Integer> item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncIntegerArrayList(String path, String key, ArrayList<Integer> item,
+            boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putIntegerArrayList(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
 
-    public void syncStringArrayList(String key, ArrayList<String> item, boolean isUrgent) {
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(DATA_PATH_PREFIX + key);
+    public void syncStringArrayList(String path, String key, ArrayList<String> item,
+            boolean isUrgent) {
+        WearUtil.assertNotEmpty(path, "path");
+        WearUtil.assertNotEmpty(key, "key");
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
         putDataMapRequest.getDataMap().putStringArrayList(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -747,7 +756,8 @@ public class GmsWear {
      */
     public void assertApiConnectivity() {
         if (!isConnected()) {
-            throw new IllegalStateException("Google API Client is not connected");
+            Log.e(TAG, "Google API Client is not connected");
+//            throw new IllegalStateException();
         }
     }
 
@@ -1194,101 +1204,6 @@ public class GmsWear {
         }
     }
 
-    private class ReceivedFileResultCallback implements ResultCallback<Status> {
-        String requestId;
-        long size;
-
-        File outFile;
-        Channel channel;
-
-        ReceivedFileResultCallback(String requestId, File outFile, long size, Channel channel) {
-            this.requestId = requestId;
-            this.outFile = outFile;
-            this.size = size;
-            this.channel = channel;
-        }
-
-        @Override
-        public void onResult(@NonNull Status status) {
-
-            int statusCode = status.getStatusCode();
-            if (!status.isSuccess()) {
-                Log.e(TAG, "receiveFile(): Failed to receive file with "
-                        + "status code = " + statusCode
-                        + ", and status: " + status.getStatus());
-
-                // Notify consumers of the failure
-                for (DataConsumer consumer : mDataConsumers) {
-                    consumer.onFileReceivedResult(statusCode,
-                            requestId, outFile, outFile.getName());
-                }
-            } else {
-                // Add a listener to be notified when the transfer is
-                // over
-                channel.addListener(mGoogleApiClient,
-                        new ChannelApi.ChannelListener() {
-                            @Override
-                            public void onChannelOpened(
-                                    Channel channel) {
-                            }
-
-                            @Override
-                            public void onChannelClosed(Channel channel,
-                                    int closeReason,
-                                    int appSpecificErrorCode) {
-                            }
-
-                            @Override
-                            public void onInputClosed(Channel channel,
-                                    int closeReason,
-                                    int appSpecificErrorCode) {
-                                // File transfer is finished
-                                int resultStatusCode;
-                                if (closeReason
-                                        != CLOSE_REASON_NORMAL) {
-                                    Log.e(TAG,
-                                            "receiveFile(): Failed to"
-                                                    + " receive file "
-                                                    + "with "
-                                                    + "status "
-                                                    + "closeReason = "
-                                                    + closeReason
-                                                    + ", and "
-                                                    +
-                                                    "appSpecificErrorCode: "
-                                                    +
-                                                    appSpecificErrorCode);
-                                    resultStatusCode = CommonStatusCodes.ERROR;
-                                } else if (size != outFile.length()) {
-                                    Log.e(TAG,
-                                            "receiveFile(): Size of "
-                                                    + "the transferred "
-                                                    + "file doesn't "
-                                                    + "match the "
-                                                    + "original size");
-                                    resultStatusCode =
-                                            CommonStatusCodes.ERROR;
-                                } else {
-                                    resultStatusCode =
-                                            CommonStatusCodes.SUCCESS;
-                                }
-                                // Notify consumers
-                                for (DataConsumer consumer : mDataConsumers) {
-                                    consumer.onFileReceivedResult(resultStatusCode,
-                                            requestId, outFile, outFile.getName());
-                                }
-                            }
-
-                            @Override
-                            public void onOutputClosed(Channel channel,
-                                    int closeReason,
-                                    int appSpecificErrorCode) {
-                            }
-                        });
-            }
-        }
-    }
-
     private Map<String, String> getFileTransferParams(String path) {
         Map<String, String> result = new HashMap<>();
         if (path.startsWith(Constants.PATH_FILE_TRANSFER_TYPE_FILE)) {
@@ -1419,6 +1334,101 @@ public class GmsWear {
     private void onAppEnterBackground() {
         mAppForeground = false;
         stopGmsWearService();
+    }
+
+    private class ReceivedFileResultCallback implements ResultCallback<Status> {
+        String requestId;
+        long size;
+
+        File outFile;
+        Channel channel;
+
+        ReceivedFileResultCallback(String requestId, File outFile, long size, Channel channel) {
+            this.requestId = requestId;
+            this.outFile = outFile;
+            this.size = size;
+            this.channel = channel;
+        }
+
+        @Override
+        public void onResult(@NonNull Status status) {
+
+            int statusCode = status.getStatusCode();
+            if (!status.isSuccess()) {
+                Log.e(TAG, "receiveFile(): Failed to receive file with "
+                        + "status code = " + statusCode
+                        + ", and status: " + status.getStatus());
+
+                // Notify consumers of the failure
+                for (DataConsumer consumer : mDataConsumers) {
+                    consumer.onFileReceivedResult(statusCode,
+                            requestId, outFile, outFile.getName());
+                }
+            } else {
+                // Add a listener to be notified when the transfer is
+                // over
+                channel.addListener(mGoogleApiClient,
+                        new ChannelApi.ChannelListener() {
+                            @Override
+                            public void onChannelOpened(
+                                    Channel channel) {
+                            }
+
+                            @Override
+                            public void onChannelClosed(Channel channel,
+                                    int closeReason,
+                                    int appSpecificErrorCode) {
+                            }
+
+                            @Override
+                            public void onInputClosed(Channel channel,
+                                    int closeReason,
+                                    int appSpecificErrorCode) {
+                                // File transfer is finished
+                                int resultStatusCode;
+                                if (closeReason
+                                        != CLOSE_REASON_NORMAL) {
+                                    Log.e(TAG,
+                                            "receiveFile(): Failed to"
+                                                    + " receive file "
+                                                    + "with "
+                                                    + "status "
+                                                    + "closeReason = "
+                                                    + closeReason
+                                                    + ", and "
+                                                    +
+                                                    "appSpecificErrorCode: "
+                                                    +
+                                                    appSpecificErrorCode);
+                                    resultStatusCode = CommonStatusCodes.ERROR;
+                                } else if (size != outFile.length()) {
+                                    Log.e(TAG,
+                                            "receiveFile(): Size of "
+                                                    + "the transferred "
+                                                    + "file doesn't "
+                                                    + "match the "
+                                                    + "original size");
+                                    resultStatusCode =
+                                            CommonStatusCodes.ERROR;
+                                } else {
+                                    resultStatusCode =
+                                            CommonStatusCodes.SUCCESS;
+                                }
+                                // Notify consumers
+                                for (DataConsumer consumer : mDataConsumers) {
+                                    consumer.onFileReceivedResult(resultStatusCode,
+                                            requestId, outFile, outFile.getName());
+                                }
+                            }
+
+                            @Override
+                            public void onOutputClosed(Channel channel,
+                                    int closeReason,
+                                    int appSpecificErrorCode) {
+                            }
+                        });
+            }
+        }
     }
 
     private final class GmsConnectionCallbacksListener

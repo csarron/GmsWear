@@ -1,13 +1,20 @@
 package com.cscao.apps.gmswear;
 
+import static com.cscao.apps.shared.Constants.PATH_MSG_ONE;
+import static com.cscao.apps.shared.Constants.PATH_MSG_TWO;
+import static com.cscao.apps.shared.Constants.PERMISSIONS_REQUEST_CODE;
+import static com.cscao.apps.shared.Constants.SELECT_PICTURE;
+import static com.cscao.apps.shared.Constants.SYNC_KEY;
+import static com.cscao.apps.shared.Constants.SYNC_PATH;
+import static com.cscao.apps.shared.Utils.getElapsedTimeMsg;
+import static com.cscao.apps.shared.Utils.sendSelectedImage;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,134 +25,64 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.cscao.libs.GmsWear.GmsWear;
-import com.cscao.libs.GmsWear.connectivity.FileTransfer;
-import com.cscao.libs.GmsWear.consumer.AbstractDataConsumer;
-import com.cscao.libs.GmsWear.consumer.DataConsumer;
+import com.cscao.apps.shared.Utils;
+import com.cscao.libs.gmswear.GmsWear;
+import com.cscao.libs.gmswear.connectivity.FileTransfer;
+import com.cscao.libs.gmswear.consumer.AbstractDataConsumer;
+import com.cscao.libs.gmswear.consumer.DataConsumer;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.WearableStatusCodes;
 import com.orhanobut.logger.Logger;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class PhoneActivity extends Activity {
 
-    private static final String MSG_CAPABILITY_NAME = "msg_capability";
-    private static final int SELECT_PICTURE = 1;
-    private static final int PERMISSIONS_REQUEST_CODE = 2;
-    private final String MESSAGE1_PATH = "/p11";
-    private final String MESSAGE2_PATH = "/p22";
-    private TextView mTextView;
+    // already specified in res/values/wear.xml
+//    public static final String MSG_CAPABILITY = "msg_capability";
+
+    private TextView mMsgTextView;
     private ImageView mImageView;
-    private Button message1Button;
-    private Button message2Button;
-    private Button syncButton;
-    private Button selectButton;
+    private Button mMsgOneButton;
+    private Button mMsgTwoButton;
+    private Button mSyncButton;
+    private Button mSelectButton;
     private GmsWear mGmsWear;
     private DataConsumer mDataConsumer;
 
-    private int count = 1;
+    private int mImageNo = 1;
+//    private int mIntSync = 1; // 1, 4, 7...
+//    private int mIntMsgOne = 2; // 2, 5, 8...
+//    private int mIntMsgTwo = 3; // 3, 6, 9...
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.phone_activity);
 
-        GmsWear.initialize(this, MSG_CAPABILITY_NAME);
         mGmsWear = GmsWear.getInstance();
-        mTextView = (TextView) findViewById(R.id.textView);
-        mTextView.setKeepScreenOn(true);
 
+        mMsgTextView = (TextView) findViewById(R.id.tv_msg);
         mImageView = (ImageView) findViewById(R.id.imageView);
 
-        message1Button = (Button) findViewById(R.id.message1Button);
-        message2Button = (Button) findViewById(R.id.message2Button);
-
-        // Set message1Button onClickListener to send message 1
-        message1Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Logger.d("send m1");
-                mGmsWear.sendMessage(MESSAGE1_PATH, getString(R.string.msg_info1).getBytes());
-                showToast(getString(R.string.message_sent) + MESSAGE1_PATH);
-            }
-        });
-
-        // Set message2Button onClickListener to send message 2
-        message2Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGmsWear.sendMessage(MESSAGE2_PATH, getString(R.string.msg_info2).getBytes(),
-                        new ResultCallback<MessageApi.SendMessageResult>() {
-                            @Override
-                            public void onResult(
-                                    @NonNull MessageApi.SendMessageResult sendMessageResult) {
-                                if (sendMessageResult.getStatus().isSuccess()) {
-                                    Logger.d("msg 2 sent success");
-                                }
-                            }
-                        });
-                showToast(getString(R.string.message_sent) + MESSAGE2_PATH);
-            }
-        });
-
-
-        syncButton = (Button) findViewById(R.id.syncButton);
-        syncButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGmsWear.syncString("key", getString(R.string.sync_button) + count, false);
-                String imgPath = "img" + (count = count % 5 + 1) + ".jpg";
-                Logger.d("img path: " + imgPath);
-                File file = copyFileToPrivateDataIfNeededAndReturn(imgPath);
-                syncImage(file);
-//                new SendImageTask().execute(Images.urls[count % Images.urls.length]);
-//                showToast("sent sync button");
-
-            }
-        });
-
-        syncButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                count = 1;
-                syncButton.setText(getString(R.string.sync_button));
-                return false;
-            }
-        });
-
-        selectButton = (Button) findViewById(R.id.selectButton);
-        selectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,
-                        "Select Picture"), SELECT_PICTURE);
-            }
-        });
+        mMsgOneButton = (Button) findViewById(R.id.btn_send_msg1);
+        mMsgTwoButton = (Button) findViewById(R.id.btn_send_msg2);
+        mSyncButton = (Button) findViewById(R.id.btn_sync);
+        mSelectButton = (Button) findViewById(R.id.btn_select_image);
 
         mDataConsumer = new AbstractDataConsumer() {
             @Override
             public void onMessageReceived(MessageEvent messageEvent) {
-                if (messageEvent.getPath().equals(MESSAGE1_PATH)) {
-                    updateUI(messageEvent, getString(R.string.received_message1));
-                } else if (messageEvent.getPath().equals(MESSAGE2_PATH)) {
-                    updateUI(messageEvent, getString(R.string.received_message2));
+                String msg = new String(messageEvent.getData());
+                if (messageEvent.getPath().equals(PATH_MSG_ONE)) {
+                    setTextAsync(mMsgTextView, msg + PATH_MSG_ONE);
+                } else if (messageEvent.getPath().equals(PATH_MSG_TWO)) {
+                    setTextAsync(mMsgTextView, msg + PATH_MSG_TWO);
                 }
             }
 
@@ -154,12 +91,8 @@ public class PhoneActivity extends Activity {
                 DataItem item = event.getDataItem();
                 final DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                 if (event.getType() == DataEvent.TYPE_CHANGED) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            syncButton.setText(dataMap.getString("key"));
-                        }
-                    });
+                    String syncString = dataMap.getString(SYNC_KEY);
+                    setTextAsync(mMsgTextView, syncString);
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
                     Logger.d("DataItem Deleted" + event.getDataItem().toString());
                 }
@@ -167,59 +100,66 @@ public class PhoneActivity extends Activity {
             }
 
             @Override
-            public void onInputStreamForChannelOpened(int statusCode, String requestId,
-                    Channel channel, final InputStream inputStream) {
-                if (statusCode != WearableStatusCodes.SUCCESS) {
-                    Logger.e("onInputStreamForChannelOpened(): " + "Failed to get input stream");
-                    return;
-                }
-                Logger.d("Channel opened for path: " + channel.getPath());
+            public void onFileReceivedResult(int statusCode, String requestId, File savedFile,
+                    String originalName) {
+                Logger.d(
+                        "File Received: status=%d, requestId=%s, savedLocation=%s, originalName=%s",
+                        statusCode, requestId, savedFile.getAbsolutePath(), originalName);
 
-                new AsyncTask<Void, Void, File>() {
-                    @Override
-                    protected File doInBackground(Void... params) {
-                        try {
-                            File imageFile = new File(getCacheDir(), "temp");
-                            FileOutputStream outputStream = new FileOutputStream(imageFile);
-                            IOUtils.copy(inputStream, outputStream);
-                            return imageFile;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            closeStreams();
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(File imageFile) {
-                        Logger.d("setting image");
-                        if (imageFile != null) {
-                            Glide.with(getApplicationContext()).load(imageFile)
-                                    .into(mImageView);
-                        } else {
-                            Logger.e("image file null");
-                        }
-                    }
-
-                    void closeStreams() {
-                        try {
-                            if (inputStream != null) {
-                                inputStream.close();
-                            }
-                        } catch (IOException e) {
-                            // no-op
-                        }
-                    }
-                }.execute();
-//
+                Glide.with(getApplicationContext()).load(savedFile).into(mImageView);
             }
+
         };
 
         checkPermissions();
     }
 
+    private void setTextAsync(final TextView view, final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                view.setText(text);
+            }
+        });
+    }
 
-    private void syncImage(File fileName) {
+    public void selectImage(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select Picture"), SELECT_PICTURE);
+    }
+
+    public void syncString(View view) {
+        mGmsWear.syncString(SYNC_PATH, SYNC_KEY,
+                getString(R.string.synced_msg) + getElapsedTimeMsg(), false);
+    }
+
+    public void sendMsgTwo(View view) {
+        mGmsWear.sendMessage(PATH_MSG_TWO, getElapsedTimeMsg().getBytes(),
+                new ResultCallback<MessageApi.SendMessageResult>() {
+                    @Override
+                    public void onResult(
+                            @NonNull MessageApi.SendMessageResult sendMessageResult) {
+                        if (sendMessageResult.getStatus().isSuccess()) {
+                            Logger.d("msg 2 sent success");
+                        }
+                    }
+                });
+    }
+
+    public void sendMsgOne(View view) {
+        Logger.d("send m1");
+        mGmsWear.sendMessage(PATH_MSG_ONE, getElapsedTimeMsg().getBytes());
+    }
+
+    // send image through file api
+    public void sendImage(View view) {
+        String imgPath = "img" + (mImageNo = mImageNo % 5 + 1) + ".jpg";
+        Logger.d("img path: " + imgPath);
+        File fileName = Utils.copyFileToPrivateDataIfNeededAndReturn(this, imgPath);
+
         // show image locally
         Glide.with(this).load(fileName).into(mImageView);
 
@@ -229,120 +169,12 @@ public class PhoneActivity extends Activity {
         fileTransferHighLevel.startTransfer();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                syncSelectedImage(selectedImageUri);
-            }
-        }
-    }
-
-    private void syncSelectedImage(final Uri uri) {
-        // show image locally
-        Glide.with(this).load(uri).into(mImageView);
-
-        // send to wearable
-        FileTransfer fileTransferHighLevel = new FileTransfer.Builder()
-                .setOnChannelOutputStreamListener(new FileTransfer.OnChannelOutputStreamListener() {
-                    @Override
-                    public void onOutputStreamForChannelReady(int statusCode, Channel channel,
-                            final OutputStream outputStream) {
-                        if (statusCode != WearableStatusCodes.SUCCESS) {
-                            Logger.e("Failed to open a channel, status code: " + statusCode);
-                            return;
-                        }
-                        sendFile(uri, outputStream);
-                    }
-                }).build();
-        fileTransferHighLevel.requestOutputStream();
-
-    }
-
-    private void sendFile(final Uri uri, final OutputStream os) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-//                final byte[] buffer = new byte[1024];
-                try {
-                    InputStream is = getContentResolver().openInputStream(uri);
-                    assert is != null;
-                    IOUtils.copy(is, os);
-                    is.close();
-                    os.close();
-//                    assert is != null;
-//                    long fileSize = is.available();
-//                    Logger.d("img size: " + fileSize);
-//                    BufferedInputStream bis = new BufferedInputStream(is);
-//                    BufferedOutputStream bos = new BufferedOutputStream(os);
-//                    while (bis.read(buffer) != -1) {
-//                        bos.write(buffer);
-////                        Logger.d("writing buffer");
-//                    }
-                } catch (IOException e) {
-                    Logger.e("startTransfer(): IO Error while reading/writing", e);
-                }
-            }
-        }).start();
-    }
-
-    private void updateUI(final MessageEvent messageEvent, final String uiText) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String display = uiText + "\n" + new String(messageEvent.getData());
-                Logger.d("display is:" + display);
-                mTextView.setText(display);
-            }
-        });
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private File copyFileToPrivateDataIfNeededAndReturn(String fileName) {
-        File downloadFolder = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, fileName);
-        if (!downloadFolder.exists()) {
-            boolean hasDirCreated = downloadFolder.mkdirs();
-            if (!hasDirCreated) {
-                Logger.e("cannot create download folder");
-                return null;
-            }
-        }
-
-        if (file.exists()) {
-            Logger.d("File already exists in the target location");
-            return file;
-        } else {
-            try {
-                if (!file.createNewFile()) {
-                    return null;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            InputStream inputStream = getAssets().open(fileName);
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            IOUtils.copy(inputStream, fileOutputStream);
-            return file;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private void checkPermissions() {
-        boolean recordAudioPermissionGranted =
+        boolean writeExternalStoragePermissionGranted =
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED;
 
-        if (recordAudioPermissionGranted) {
+        if (writeExternalStoragePermissionGranted) {
             enableButtons();
         } else {
             ActivityCompat.requestPermissions(this,
@@ -350,6 +182,47 @@ public class PhoneActivity extends Activity {
                     PERMISSIONS_REQUEST_CODE);
         }
 
+    }
+
+    private void enableButtons() {
+        mMsgOneButton.setEnabled(true);
+        mMsgTwoButton.setEnabled(true);
+        mSyncButton.setEnabled(true);
+        mSelectButton.setEnabled(true);
+    }
+
+    private void disableButtons() {
+        mMsgOneButton.setEnabled(false);
+        mMsgTwoButton.setEnabled(false);
+        mSyncButton.setEnabled(false);
+        mSelectButton.setEnabled(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.d("onResume");
+//        mGmsWear.addCapabilities(MSG_CAPABILITY);
+        mGmsWear.addWearConsumer(mDataConsumer);
+    }
+
+    @Override
+    protected void onPause() {
+        Logger.d("onPause");
+//        mGmsWear.removeCapabilities(MSG_CAPABILITY);
+        mGmsWear.removeWearConsumer(mDataConsumer);
+        super.onPause();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                // send image through InputStream  api
+                sendSelectedImage(selectedImageUri, mImageView);
+            }
+        }
     }
 
     @Override
@@ -369,33 +242,4 @@ public class PhoneActivity extends Activity {
             }
         }
     }
-
-    private void enableButtons() {
-        message1Button.setEnabled(true);
-        message2Button.setEnabled(true);
-        syncButton.setEnabled(true);
-        selectButton.setEnabled(true);
-    }
-
-    private void disableButtons() {
-        message1Button.setEnabled(false);
-        message2Button.setEnabled(false);
-        syncButton.setEnabled(false);
-        selectButton.setEnabled(false);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Logger.d("onResume");
-        mGmsWear.addWearConsumer(mDataConsumer);
-    }
-
-    @Override
-    protected void onPause() {
-        Logger.d("onPause");
-        mGmsWear.removeWearConsumer(mDataConsumer);
-        super.onPause();
-    }
-
 }

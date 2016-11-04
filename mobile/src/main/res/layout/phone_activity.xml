@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center|top"
@@ -16,46 +16,54 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_marginTop="80dp"
-        android:contentDescription="@string/app_name" />
+        android:layout_below="@id/tv_msg"
+        android:contentDescription="@string/app_name"
+        android:onClick="sendImage"
+        android:src="@mipmap/ic_launcher" />
 
     <Button
-        android:id="@+id/message1Button"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_send_msg1"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_marginBottom="50dp"
-        android:layout_marginLeft="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@id/imageView"
+        android:layout_alignStart="@id/imageView"
         android:enabled="false"
-        android:text="@string/send_message1" />
+        android:onClick="sendMsgOne"
+        android:text="@string/send_message1"
+        android:textAppearance="@android:style/TextAppearance.Widget.Button" />
 
     <Button
-        android:id="@+id/message2Button"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_send_msg2"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="50dp"
-        android:layout_marginRight="60dp"
+        android:layout_alignEnd="@id/imageView"
+        android:layout_below="@id/imageView"
+        android:layout_marginEnd="20dp"
         android:enabled="false"
-        android:text="@string/send_message2" />
+        android:onClick="sendMsgTwo"
+        android:text="@string/send_message2"
+        android:textAppearance="@android:style/TextAppearance.Widget.Button" />
 
     <Button
-        android:id="@+id/syncButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_sync"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_marginBottom="100dp"
-        android:layout_marginLeft="60dp"
+        android:layout_below="@id/btn_send_msg1"
+        android:layout_alignStart="@id/btn_send_msg1"
         android:enabled="false"
-        android:text="@string/sync_button" />
+        android:onClick="syncString"
+        android:text="@string/sync_button"
+        android:textAppearance="@android:style/TextAppearance.Widget.Button" />
 
     <Button
-        android:id="@+id/selectButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_select_image"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="100dp"
-        android:layout_marginRight="60dp"
+        android:layout_alignEnd="@id/btn_send_msg2"
+        android:layout_below="@id/btn_send_msg2"
         android:enabled="false"
-        android:text="@string/select_button" />
-</FrameLayout>
+        android:onClick="selectImage"
+        android:text="@string/select_button"
+        android:textAppearance="@android:style/TextAppearance.Widget.Button" />
+</RelativeLayout>

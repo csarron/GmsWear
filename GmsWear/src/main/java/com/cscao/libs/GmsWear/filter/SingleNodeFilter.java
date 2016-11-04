@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.filter;
+package com.cscao.libs.gmswear.filter;
 
 import android.support.annotation.Nullable;
 

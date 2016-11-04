@@ -14,9 +14,9 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.consumer;
+package com.cscao.libs.gmswear.consumer;
 
-import com.cscao.libs.GmsWear.GmsWear;
+import com.cscao.libs.gmswear.GmsWear;
 import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;

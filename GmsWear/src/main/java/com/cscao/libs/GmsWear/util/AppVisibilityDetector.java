@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.util;
+package com.cscao.libs.gmswear.util;
 
 import android.app.Activity;
 import android.app.Application;

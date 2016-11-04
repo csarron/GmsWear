@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">GmsWear</string>
-    <string name="received_message1">Received message from 1: </string>
-    <string name="received_message2">Received message from 2:</string>
-    <string name="msg_info1">phone 111111111!</string>
-    <string name="msg_info2">phone 222222222!</string>
-    <string name="received_messages">Received message:</string>
+    <string name="received_messages">Received:</string>
 
     <string name="send_message1">Send msg 1</string>
     <string name="send_message2">Send msg 2</string>
@@ -15,6 +11,7 @@
     <string name="wearable_api_unavailable">Wearable API is unavailable.</string>
 
     <string name="sync_button">Sync</string>
-    <string name="select_button">Select</string>
+    <string name="select_button">Select Image</string>
     <string name="exiting_for_permission">Write to external storage permission is required, existing now!</string>
+    <string name="synced_msg">Synced:</string>
 </resources>

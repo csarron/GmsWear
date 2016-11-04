@@ -14,21 +14,50 @@ Features:
 - Send and receive messages from both wear and mobile devices
 - Syncing data between wearable and handhelds
 
-## Usage
+## Installation
 
 - gradele:
 
 ````
 dependencies {
-    compile 'com.cscao.libs:GmsWear:0.96'
+    compile 'com.cscao.libs:gmswear:0.96'
 }
 ````
 
-- offline libs:
+## Usage
 
-just download the arr library and import into your project
+1. Configure capabilities for your Application(or Activities)
+  see sample at `mobile/src/main/res/values/wear.xml`
 
-- more usage see the original googlesample repo below, although there are small api changes
+  or you can add capabilities during runtime, see the commented `MSG_CAPABILITY` in `mobile/src/main/java/com/cscao/apps/gmswear/PhoneActivity.java`
+
+2. Configure GMS service in `AndroidManifest.xml`
+  put below info inside `application` tag
+  ```
+  <service android:name="com.cscao.libs.gmswear.GmsWearService">
+      <intent-filter>
+          <!-- listeners receive events that match the action and data filters -->
+          <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+          <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+          <action android:name="com.google.android.gms.wearable.CAPABILITY_CHANGED" />
+          <action android:name="com.google.android.gms.wearable.CHANNEL_EVENT" />
+          <data
+              android:host="*"
+              android:pathPrefix="/com.cscao.libs.gmswear/"
+              android:scheme="wear" />
+      </intent-filter>
+  </service>
+  ```
+  note that you can customize pathPrefix and `android:pathPrefix` is optional.
+
+3. Initialize the GmsWear in your application by calling `GmsWear.initialize(getApplicationContext());` in `onCreate()`.
+  see sample at `mobile/src/main/java/com/cscao/apps/gmswear/PhoneApplication.java`
+
+4. Call `GmsWear.getInstance()` where you want to send msg/data
+
+5. Set a `DataConsumer` where you want to receive msg/data, note that you need to register/unregister(often in `onResume` and `onPause()`) your data consumer to the GmsWear instance.
+
+More usage see the demo(either `PhoneActivity.java` or `WearActivity.java`) in this repo, and see the googlesamples (link below) although there are small api changes
 
 ## Note
 

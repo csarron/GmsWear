@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.util;
+package com.cscao.libs.gmswear.util;
 
 /**
  * A collection of constants that are used across this library.
@@ -26,8 +26,9 @@ public class Constants {
             = "/com.cscao.libs.gmswear/transfer/file/";
     public static final String PATH_FILE_TRANSFER_TYPE_STREAM
             = "/com.cscao.libs.gmswear/transfer/stream/";
-    public static final String DATA_PATH_PREFIX = "/com.cscao.libs.gmswear/data/";
-    public static final String ASSET_PATH_PREFIX = "/com.cscao.libs.gmswear/asset/";
+//    public static final String DATA_PATH_PREFIX = "/com.cscao.libs.gmswear/data/";
+//    public static final String ASSET_PATH_PREFIX = "/com.cscao.libs.gmswear/asset/";
+//    public static final String MSG_PATH_PREFIX = "/com.cscao.libs.gmswear/msg/";
 
     public static final String KEY_TIMESTAMP = "com.cscao.libs.gmswear.KEY_TIMESTAMP";
 

@@ -14,9 +14,9 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.filter;
+package com.cscao.libs.gmswear.filter;
 
-import com.cscao.libs.GmsWear.util.WearUtil;
+import com.cscao.libs.gmswear.util.WearUtil;
 import com.google.android.gms.wearable.Node;
 
 import java.util.HashSet;

@@ -14,12 +14,12 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.consumer;
+package com.cscao.libs.gmswear.consumer;
 
 import android.net.Uri;
 
-import com.cscao.libs.GmsWear.GmsWear;
-import com.cscao.libs.GmsWear.connectivity.FileTransfer;
+import com.cscao.libs.gmswear.GmsWear;
+import com.cscao.libs.gmswear.connectivity.FileTransfer;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataApi;

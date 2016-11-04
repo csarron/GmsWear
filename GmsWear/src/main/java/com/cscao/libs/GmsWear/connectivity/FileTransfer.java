@@ -14,20 +14,20 @@
  * imitations under the License.
  */
 
-package com.cscao.libs.GmsWear.connectivity;
+package com.cscao.libs.gmswear.connectivity;
 
-import static com.cscao.libs.GmsWear.GmsWear.getInstance;
+import static com.cscao.libs.gmswear.GmsWear.getInstance;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.cscao.libs.GmsWear.GmsWear;
-import com.cscao.libs.GmsWear.consumer.DataConsumer;
-import com.cscao.libs.GmsWear.filter.NearbyFilter;
-import com.cscao.libs.GmsWear.util.Constants;
-import com.cscao.libs.GmsWear.util.WearUtil;
+import com.cscao.libs.gmswear.GmsWear;
+import com.cscao.libs.gmswear.consumer.DataConsumer;
+import com.cscao.libs.gmswear.filter.NearbyFilter;
+import com.cscao.libs.gmswear.util.Constants;
+import com.cscao.libs.gmswear.util.WearUtil;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.wearable.Channel;
