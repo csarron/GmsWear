@@ -144,8 +144,7 @@ public class GmsWear {
      * instance and call the connect on it.
      *
      * @param context      A context. An application context will be extracted from this to avoid
-     *                     having
-     *                     a reference to any other type of context.
+     *                     having a reference to any other type of context.
      * @param capabilities (optional) zero or more capabilities, to be declared dynamically by the
      *                     caller client.
      */
@@ -172,10 +171,9 @@ public class GmsWear {
     /**
      * Sends an asynchronous message to the node with the given {@code nodeId} through {@code
      * path}.
-     * If the
-     * {@code callback} is null, then a default callback will be used that provides a feedback to
-     * the caller using the {@link DataConsumer#onSendMessageResult}, in which case, the
-     * status of the result will be made available. Callers may decide to provide their own
+     * If the {@code callback} is null, then a default callback will be used that provides a
+     * feedback to the caller using the {@link DataConsumer#onSendMessageResult}, in which case,
+     * the status of the result will be made available. Callers may decide to provide their own
      * {@code callback} to be used instead. This variant receives the message in a {@link DataMap}.
      */
     public void sendMessage(String nodeId, String path, @Nullable DataMap dataMap,
@@ -197,11 +195,9 @@ public class GmsWear {
 
     /**
      * Sends an asynchronous message to the node with the given {@code nodeId} through {@code
-     * path}.
-     * If the
-     * {@code callback} is null, then a default callback will be used that provides a feedback to
-     * the caller using the {@link DataConsumer#onSendMessageResult}, in which case, the
-     * status of the result will be made available. Callers may decide to provide their own
+     * path}. If the {@code callback} is null, then a default callback will be used that provides a
+     * feedback to the caller using the {@link DataConsumer#onSendMessageResult}, in which case,
+     * the status of the result will be made available. Callers may decide to provide their own
      * {@code callback} to be used instead. This variant receives the message in an array of bytes.
      */
     public void sendMessage(String nodeId, String path, @Nullable byte[] bytes,
@@ -252,8 +248,9 @@ public class GmsWear {
             @Nullable final ResultCallback<? super MessageApi.SendMessageResult> callback) {
         assertApiConnectivity();
         Set<Node> nearbyNodes = new NearbyFilter().filterNodes(getConnectedNodes());
-        Node node = nearbyNodes.iterator().next();
-        sendMessage(node.getId(), path, bytes, callback);
+        for (Node node : nearbyNodes) {
+            sendMessage(node.getId(), path, bytes, callback);
+        }
     }
 
     /**
@@ -306,8 +303,7 @@ public class GmsWear {
 
     /**
      * Adds a data item asynchronously. A default {@link ResultCallback} will be used to capture
-     * the
-     * result of this call.
+     * the result of this call.
      *
      * @see #putDataItem(PutDataRequest, ResultCallback)
      */
@@ -367,8 +363,7 @@ public class GmsWear {
     /**
      * Retrieves data items asynchronously. Caller can specify a {@link ResultCallback} or pass a
      * {@code null}; if a {@code null} is passed, a default {@link ResultCallback} will be used
-     * that
-     * calls {@link DataConsumer#onGetDataItems(int, DataItemBuffer)}.
+     * that calls {@link DataConsumer#onGetDataItems(int, DataItemBuffer)}.
      *
      * @see DataConsumer#onGetDataItems(int, DataItemBuffer)
      */
@@ -401,8 +396,7 @@ public class GmsWear {
      * Retrieves data items asynchronously from the Android Wear network, matching the provided URI
      * and filter type. Caller can specify a {@link ResultCallback} or pass a
      * {@code null}; if a {@code null} is passed, a default {@link ResultCallback} will be used
-     * that
-     * calls {@link DataConsumer#onGetDataItems(int, DataItemBuffer)}.
+     * that calls {@link DataConsumer#onGetDataItems(int, DataItemBuffer)}.
      *
      * @see DataApi#getDataItems(GoogleApiClient, Uri, int)
      */
@@ -432,9 +426,8 @@ public class GmsWear {
     /**
      * Retrieves data items synchronously from the Android Wear network. A {@code timeoutInMillis}
      * is required to specify the maximum length of time, in milliseconds, that the thread should
-     * be
-     * blocked. Caller needs to call {@code release()} on the returned {@link DataItemBuffer} when
-     * done.
+     * be blocked. Caller needs to call {@code release()} on the returned {@link DataItemBuffer}
+     * when done.
      */
     public DataItemBuffer getDataItemsSynchronous(long timeoutInMillis) {
         assertApiConnectivity();
@@ -490,8 +483,7 @@ public class GmsWear {
     /**
      * Retrieves data items with the given {@code dataItemUri} <b>synchronously</b>.
      * This should be called on non-UI threads. A {@code timeoutInMillis} is required to specify
-     * the
-     * maximum length of time, in milliseconds, that the thread should be blocked.
+     * the maximum length of time, in milliseconds, that the thread should be blocked.
      */
     public DataApi.DataItemResult getDataItemSynchronous(Uri dataItemUri, long timeoutInMillis) {
         assertApiConnectivity();
@@ -752,12 +744,12 @@ public class GmsWear {
 
     /**
      * This method is used to assert that we are connected to the Google Api Client for Wearable
-     * APIs. If not, it throws an {@link IllegalStateException}.
+     * APIs.
      */
     public void assertApiConnectivity() {
         if (!isConnected()) {
             Log.e(TAG, "Google API Client is not connected");
-//            throw new IllegalStateException();
+//            throw new IllegalStateException(); // maybe connected later
         }
     }
 
@@ -835,8 +827,7 @@ public class GmsWear {
 
     /**
      * Returns a view of the set of currently connected nodes. The returned set will change as
-     * nodes
-     * connect and disconnect from the Wear network. The set is safe to access from multiple
+     * nodes connect and disconnect from the Wear network. The set is safe to access from multiple
      * threads. Note that this may contain cloud, as well as nodes that are not directly connected
      * to this node.
      */
@@ -858,8 +849,7 @@ public class GmsWear {
      */
     public Set<Node> getNodesForCapability(String capability) {
         if (TextUtils.isEmpty(capability)) {
-            throw new IllegalArgumentException(
-                    "getNodesForCapability(): Capability cannot be null or empty");
+            Log.e(TAG, "getNodesForCapability(): Capability cannot be null or empty");
         }
         return mCapabilityToNodesMapping.get(capability);
     }
@@ -873,11 +863,11 @@ public class GmsWear {
      */
     public Set<Node> getNodesForCapability(String capability, NodeSelectionFilter filter) {
         if (TextUtils.isEmpty(capability)) {
-            throw new IllegalArgumentException(
-                    "getNodesForCapability(): Capability cannot be null or empty");
+            Log.e(TAG, "getNodesForCapability(): Capability cannot be null or empty");
         }
         if (filter == null) {
-            throw new IllegalArgumentException("getNodesForCapability(): filter cannot be null");
+            Log.e(TAG, "getNodesForCapability(): filter cannot be null");
+            return Collections.emptySet();
         }
         Set<Node> nodes = mCapabilityToNodesMapping.get(capability);
         if (nodes == null) {
@@ -929,10 +919,7 @@ public class GmsWear {
      * stream when it is done.
      *
      * @param node     The node to which a channel should be opened. Note that {@code
-     *                 node.isNearby()}
-     *                 should return {@code true} otherwise this method throws an {@link
-     *                 IllegalArgumentException}
-     *                 exception.
+     *                 node.isNearby()} should return {@code true}
      * @param path     The path used for opening a channel
      * @param listener The listener that is called when this request is completed.
      */
@@ -956,8 +943,7 @@ public class GmsWear {
                         }
                     });
         } else {
-            throw new IllegalArgumentException(
-                    "openChannel(): Node should be nearby, you have: " + node);
+            Log.e(TAG, "openChannel(): Node should be nearby, you have: " + node);
         }
     }
 
@@ -970,8 +956,7 @@ public class GmsWear {
      * {@link DataConsumer#onInputStreamForChannelOpened(int, String, Channel, InputStream)}
      * to be notified of the availability of an {@link InputStream} to handle the incoming bytes.
      * <p>
-     * <p>Caller should register a
-     * {@link FileTransfer.OnChannelOutputStreamListener}
+     * <p>Caller should register a {@link FileTransfer.OnChannelOutputStreamListener}
      * listener to be notified of the status of the request and to obtain a reference to the
      * {@link OutputStream} that is opened upon successful execution.
      *
@@ -987,45 +972,46 @@ public class GmsWear {
     public void getOutputStreamViaChannel(Node node, String path,
             final FileTransfer.OnChannelOutputStreamListener listener) {
         if (!node.isNearby()) {
-            throw new IllegalArgumentException(
-                    "getOutputStreamViaChannel(): Node should be nearby, you have: " + node);
-        }
-        Wearable.ChannelApi.openChannel(
-                mGoogleApiClient, node.getId(), path).setResultCallback(
-                new ResultCallback<ChannelApi.OpenChannelResult>() {
-                    @Override
-                    public void onResult(ChannelApi.OpenChannelResult openChannelResult) {
-                        if (openChannelResult.getStatus().isSuccess()) {
-                            final Channel channel = openChannelResult.getChannel();
-                            channel.addListener(mGoogleApiClient, new FileChannelListener());
-                            channel.getOutputStream(mGoogleApiClient).setResultCallback(
+            Log.e(TAG, "getOutputStreamViaChannel(): Node should be nearby, you have: " + node);
+        } else {
+            Wearable.ChannelApi.openChannel(
+                    mGoogleApiClient, node.getId(), path).setResultCallback(
+                    new ResultCallback<ChannelApi.OpenChannelResult>() {
+                        @Override
+                        public void onResult(ChannelApi.OpenChannelResult openChannelResult) {
+                            if (openChannelResult.getStatus().isSuccess()) {
+                                final Channel channel = openChannelResult.getChannel();
+                                channel.addListener(mGoogleApiClient, new FileChannelListener());
+                                channel.getOutputStream(mGoogleApiClient).setResultCallback(
 
-                                    new ResultCallback<Channel.GetOutputStreamResult>() {
-                                        @Override
-                                        public void onResult(
-                                                Channel.GetOutputStreamResult
-                                                        getOutputStreamResult) {
-                                            if (getOutputStreamResult.getStatus().isSuccess()) {
-                                                OutputStream outputStream
-                                                        = getOutputStreamResult.getOutputStream();
-                                                listener.onOutputStreamForChannelReady(
-                                                        getOutputStreamResult.getStatus()
-                                                                .getStatusCode(), channel,
-                                                        outputStream);
-                                            } else {
-                                                closeChannel(channel);
-                                                listener.onOutputStreamForChannelReady(
-                                                        getOutputStreamResult.getStatus()
-                                                                .getStatusCode(), null, null);
+                                        new ResultCallback<Channel.GetOutputStreamResult>() {
+                                            @Override
+                                            public void onResult(
+                                                    Channel.GetOutputStreamResult
+                                                            getOutputStreamResult) {
+                                                if (getOutputStreamResult.getStatus().isSuccess()) {
+                                                    OutputStream outputStream
+                                                            =
+                                                            getOutputStreamResult.getOutputStream();
+                                                    listener.onOutputStreamForChannelReady(
+                                                            getOutputStreamResult.getStatus()
+                                                                    .getStatusCode(), channel,
+                                                            outputStream);
+                                                } else {
+                                                    closeChannel(channel);
+                                                    listener.onOutputStreamForChannelReady(
+                                                            getOutputStreamResult.getStatus()
+                                                                    .getStatusCode(), null, null);
+                                                }
                                             }
-                                        }
-                                    });
-                        } else {
-                            listener.onOutputStreamForChannelReady(
-                                    openChannelResult.getStatus().getStatusCode(), null, null);
+                                        });
+                            } else {
+                                listener.onOutputStreamForChannelReady(
+                                        openChannelResult.getStatus().getStatusCode(), null, null);
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
     /**
@@ -1046,7 +1032,7 @@ public class GmsWear {
         assertApiConnectivity();
         WearUtil.assertNonUiThread();
         if (asset == null) {
-            throw new IllegalArgumentException("Asset must be non-null");
+            Log.e(TAG, "Asset must be non-null");
         }
 
         InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
@@ -1216,8 +1202,7 @@ public class GmsWear {
             result.put(FileTransfer.PARAM_SIZE, pieces[1]);
             result.put(FileTransfer.PARAM_REQUEST_ID, pieces[2]);
         } else {
-            throw new IllegalArgumentException(
-                    "Path doesn't start with " + Constants.PATH_FILE_TRANSFER_TYPE_FILE);
+            Log.e(TAG, "Path doesn't start with " + Constants.PATH_FILE_TRANSFER_TYPE_FILE);
         }
 
         return result;
@@ -1229,8 +1214,7 @@ public class GmsWear {
             String[] pieces = path.replace(Constants.PATH_FILE_TRANSFER_TYPE_FILE, "").split("\\/");
             result.put(FileTransfer.PARAM_REQUEST_ID, pieces[0]);
         } else {
-            throw new IllegalArgumentException(
-                    "Path doesn't start with " + Constants.PATH_FILE_TRANSFER_TYPE_STREAM);
+            Log.e(TAG, "Path doesn't start with " + Constants.PATH_FILE_TRANSFER_TYPE_STREAM);
         }
 
         return result;
