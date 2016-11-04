@@ -5,7 +5,7 @@ ext {
     bintrayName = 'gmswear'
 
     publishedGroupId = 'com.cscao.libs'
-    libraryName = 'gmswear'
+    libraryName = 'GmsWear'
     artifact = 'gmswear'
 
     libraryDescription = 'GMS Library for Android Wear'
