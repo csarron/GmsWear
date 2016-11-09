@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -133,6 +134,10 @@ public class FileTransfer {
         final Uri uri = Uri.fromFile(mFile);
         String path = buildPath(mTargetName, mRequestId, mFile.length());
         final GmsWear gmsWear = getInstance();
+        if (mNode == null) {
+            return;
+        }
+
         gmsWear.openChannel(mNode, path, new OnChannelReadyListener() {
             @Override
             public void onChannelReady(int statusCode, Channel channel) {
@@ -275,10 +280,13 @@ public class FileTransfer {
          */
         public Builder() {
             mGmsWear = getInstance();
-            mNode = new NearbyFilter().
-                    filterNodes(mGmsWear.getConnectedNodes())
-                    .iterator()
-                    .next();
+            Set<Node> nodes = new NearbyFilter().
+                    filterNodes(mGmsWear.getConnectedNodes());
+            if (!nodes.isEmpty()) {
+                mNode = nodes.iterator().next();
+            } else {
+                Log.e(TAG, "no available nodes to send");
+            }
         }
 
         /**

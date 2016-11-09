@@ -20,7 +20,7 @@ Features:
 
 ````
 dependencies {
-    compile 'com.cscao.libs:gmswear:0.97'
+    compile 'com.cscao.libs:gmswear:0.97.1'
 }
 ````
 
@@ -56,6 +56,8 @@ dependencies {
 4. Call `GmsWear.getInstance()` where you want to send msg/data
 
 5. Set a `DataConsumer` where you want to receive msg/data, note that you need to register/unregister(often in `onResume` and `onPause()`) your data consumer to the GmsWear instance.
+
+You can also skip step 1 and dynamically add capabilities(either during initialization or right before you send data) to your app
 
 More usage see the demo(either `PhoneActivity.java` or `WearActivity.java`) in this repo, and see the googlesamples (link below) although there are small api changes
 
