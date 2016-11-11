@@ -60,6 +60,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1043,6 +1044,38 @@ public class GmsWear {
             return null;
         }
         return BitmapFactory.decodeStream(assetInputStream);
+    }
+
+
+    /**
+     * Extracts byte array data from an
+     * {@link com.google.android.gms.wearable.Asset}, in a blocking way, hence should not be called
+     * on the UI thread. This may return {@code null}.
+     */
+    public byte[] loadAssetSynchronous(Asset asset) throws IOException {
+        assertApiConnectivity();
+        WearUtil.assertNonUiThread();
+        if (asset == null) {
+            throw new IllegalArgumentException("Asset must be non-null");
+        }
+
+        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
+                mGoogleApiClient, asset).await().getInputStream();
+
+        if (assetInputStream == null) {
+            Log.w(TAG, "Requested an unknown Asset.");
+            return null;
+        }
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        int n = 0;
+        byte[] buffer = new byte[4096];
+        while (-1 != (n = assetInputStream.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+
+        return output.toByteArray();
     }
 
     /**
