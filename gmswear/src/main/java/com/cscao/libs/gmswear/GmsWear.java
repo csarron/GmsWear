@@ -537,7 +537,7 @@ public class GmsWear {
     public void syncAsset(String path, String key, byte[] bytes, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         Asset asset = Asset.createFromBytes(bytes);
         putDataMapRequest.getDataMap().putAsset(key, asset);
         syncData(putDataMapRequest, isUrgent);
@@ -546,7 +546,7 @@ public class GmsWear {
     public void syncBoolean(String path, String key, boolean item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putBoolean(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -554,7 +554,7 @@ public class GmsWear {
     public void syncByte(String path, String key, byte item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putByte(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -562,7 +562,7 @@ public class GmsWear {
     public void syncInt(String path, String key, int item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putInt(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -570,7 +570,7 @@ public class GmsWear {
     public void syncLong(String path, String key, long item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putLong(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -578,7 +578,7 @@ public class GmsWear {
     public void syncFloat(String path, String key, float item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putFloat(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -586,7 +586,7 @@ public class GmsWear {
     public void syncDouble(String path, String key, long item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putDouble(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -594,7 +594,7 @@ public class GmsWear {
     public void syncByteArray(String path, String key, byte[] item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putByteArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -602,7 +602,7 @@ public class GmsWear {
     public void syncString(String path, String key, String item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putString(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -610,7 +610,7 @@ public class GmsWear {
     public void syncLongArray(String path, String key, long[] item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putLongArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -618,7 +618,7 @@ public class GmsWear {
     public void syncFloatArray(String path, String key, float[] item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putFloatArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -626,7 +626,7 @@ public class GmsWear {
     public void syncStringArray(String path, String key, String[] item, boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putStringArray(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -635,7 +635,7 @@ public class GmsWear {
             boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putIntegerArrayList(key, item);
         syncData(putDataMapRequest, isUrgent);
     }
@@ -644,7 +644,7 @@ public class GmsWear {
             boolean isUrgent) {
         WearUtil.assertNotEmpty(path, "path");
         WearUtil.assertNotEmpty(key, "key");
-        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path + key);
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
         putDataMapRequest.getDataMap().putStringArrayList(key, item);
         syncData(putDataMapRequest, isUrgent);
     }

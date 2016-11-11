@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/csarron/GmsWear'
     gitUrl = 'https://github.com/csarron/GmsWear.git'
     issueUrl = 'https://github.com/csarron/GmsWear/issues'
-    libraryVersion = '0.97.1'
+    libraryVersion = '0.97.2'
 
     developerId = 'csarron'
     developerName = 'Arron Cao'
