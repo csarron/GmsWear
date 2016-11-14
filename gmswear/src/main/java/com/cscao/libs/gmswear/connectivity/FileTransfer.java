@@ -178,6 +178,10 @@ public class FileTransfer {
     public void requestOutputStream() {
         assertStreamParams();
         String path = Constants.PATH_FILE_TRANSFER_TYPE_STREAM + mRequestId;
+        if (mNode == null) {
+            Log.e(TAG, "target node can't be null ");
+            return;
+        }
         GmsWear.getInstance().getOutputStreamViaChannel(mNode, path,
                 mOnChannelOutputStreamListener);
     }
