@@ -20,7 +20,7 @@ Features:
 
 ````
 dependencies {
-    compile 'com.cscao.libs:gmswear:0.97.1'
+    compile 'com.cscao.libs:gmswear:0.97.4'
 }
 ````
 
