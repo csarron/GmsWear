@@ -1,5 +1,6 @@
 package com.cscao.apps.gmswear;
 
+import static com.cscao.apps.shared.Constants.CAPABILITY;
 import static com.cscao.apps.shared.Constants.PATH_MSG_ONE;
 import static com.cscao.apps.shared.Constants.PATH_MSG_TWO;
 import static com.cscao.apps.shared.Constants.PERMISSIONS_REQUEST_CODE;
@@ -200,13 +201,13 @@ public class WearActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-//        mGmsWear.addCapabilities(MSG_CAPABILITY);
+        mGmsWear.addCapabilities(CAPABILITY);
         mGmsWear.addWearConsumer(mDataConsumer);
     }
 
     @Override
     protected void onPause() {
-//        mGmsWear.removeCapabilities(MSG_CAPABILITY);
+        mGmsWear.removeCapabilities(CAPABILITY);
         mGmsWear.removeWearConsumer(mDataConsumer);
         super.onPause();
     }

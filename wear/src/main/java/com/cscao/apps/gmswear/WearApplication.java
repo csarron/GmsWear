@@ -1,7 +1,5 @@
 package com.cscao.apps.gmswear;
 
-import static com.cscao.apps.shared.Constants.CAPABILITY;
-
 import android.app.Application;
 
 import com.cscao.libs.gmswear.GmsWear;
@@ -16,6 +14,6 @@ public class WearApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        GmsWear.initialize(this, CAPABILITY);
+        GmsWear.initialize(this);
     }
 }
