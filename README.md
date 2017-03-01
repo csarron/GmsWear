@@ -20,7 +20,7 @@ Features:
 
 ````
 dependencies {
-    compile 'com.cscao.libs:gmsapi:0.94'
+    compile 'com.cscao.libs:gmsapi:0.94.1'
 }
 ````
 

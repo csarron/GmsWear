@@ -163,6 +163,10 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
         }
     }
 
+    public boolean isConnected() {
+        return mApiClient.isConnected();
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
         MLog.d("onConnected");
@@ -273,6 +277,10 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
      * @param onMessageResultListener the result listener for the sent message
      */
     public void sendMsg(String path, byte[] msg, boolean isSentToAllNodes, OnMessageResultListener onMessageResultListener) {
+        if (!mApiClient.isConnected()){
+            MLog.w("no connected node!");
+            return;
+        }
         if (isSentToAllNodes) {
             for (Node node : mNodes) {
                 sendMsgToNode(node.getId(), path, msg, onMessageResultListener);
@@ -300,6 +308,10 @@ public class GmsApi implements DataApi.DataListener, MessageApi.MessageListener,
      * @param isSentToAllNodes        whether or not to send the message to all nodes
      */
     public void sendMsgSync(String path, byte[] msg, boolean isSentToAllNodes){
+        if (!mApiClient.isConnected()){
+            MLog.w("no connected node!");
+            return;
+        }
         if (isSentToAllNodes) {
             for (Node node : mNodes) {
                 sendMsgToNodeSync(node.getId(), path, msg);
